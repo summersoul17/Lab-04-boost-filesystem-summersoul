@@ -34,7 +34,7 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/
         )
 
-add_library(scaner STATIC sources/FinalFile.cpp)
+add_library(scaner STATIC sources/Boost-FileSystem.cpp)
 
 target_include_directories(scaner
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/

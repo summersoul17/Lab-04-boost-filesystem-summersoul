@@ -1,18 +1,23 @@
-// Copyright 2020 Novo Yakov xaxaxaxa232@mail.ru
+// Copyright 2021 Summersoul17 17summersoul17@gmail.com
 
-#include <Broker.hpp>
+#include <Boost-FileSystem.hpp>
+
+bool Broker::isRightFile(const boost::filesystem::path &fileName) {
+  return (fileName.stem().extension().string() != ".old" &&
+          fileName.filename().string().find("balance") != string::npos);
+}
 
 void splitString(const string &text, string& ID, string& date) {
-  vector<string> ret;
+  vector<string> bid;
   for (auto i = text.cbegin(); i != text.cend();) {
     i = find_if(i, text.end(), not_separator);
-    auto j = find_if(i, text.end(), is_separator);
-    ret.emplace_back(i, j);
+    auto j = find_if(i, text.end(), separator);
+    bid.emplace_back(i, j);
     i = j;
   }
-  if (ret.size() == 3) {
-    ID = ret[1];
-    date = ret[2];
+  if (bid.size() == 3) {
+    ID = bid[1];
+    date = bid[2];
   }
 }
 
@@ -28,9 +33,9 @@ Broker Broker::InspectSingleBroker(const boost::filesystem::path &p) {
         splitString(x.path().stem().string(), accountID, accountDate);
 
         if(broker.accounts.find(accountID) != broker.accounts.end()) {
-          Account::setDate(broker.accounts[accountID], accountDate);
+          BrokerAccount::SetDate(broker.accounts[accountID], accountDate);
         } else {
-          broker.accounts.insert(make_pair<string, Account>(accountID.c_str(), Account(accountDate)));
+          broker.accounts.insert(make_pair<string, BrokerAccount>(accountID.c_str(), BrokerAccount(accountDate)));
         }
       }
     }
@@ -41,8 +46,7 @@ Broker Broker::InspectSingleBroker(const boost::filesystem::path &p) {
 vector<Broker> Broker::Inspect(const boost::filesystem::path& p, ostream& os) {
   vector<Broker> back;
   if (!boost::filesystem::is_directory(p))
-    throw runtime_error(
-        "argument must be path to Broker directory, not file");
+    throw runtime_error("argument must be path to Broker directory, not file");
   for (const auto& x : boost::filesystem::directory_iterator{p})
   {
     if(!is_directory(x)) {
@@ -68,20 +72,15 @@ ostream &operator<<(ostream &os, const vector<Broker>& brokers) {
   if (brokers.empty()) {
     os << "Brokers array is empty!\n";
   } else {
-    os << "--------------------------------------------BROKERS SUMMARY--------------------------------------------\n";
+    os << std::endl;
     for (const auto& broker : brokers) {
       for (const auto& account : broker.accounts) {
-        os << "broker:" << broker.name + "\t"
-           << "account:" << account.first << "\tfiles:" << account.second.getFileNum()
-           << "\tlastdate:" << account.second.getLastDate() << "\n";
+        os << "broker:" << broker.name + " "
+           << "account:" << account.first
+           << " files:" << account.second.getFileNum()
+           << " lastdate:" << account.second.getLastDate() << std::endl;
       }
     }
   }
   return os;
 }
-
-bool Broker::isRightFile(const boost::filesystem::path &fileName) {
-  return (fileName.stem().extension().string() != ".old" &&
-          fileName.filename().string().find("balance") != string::npos);
-}
-
