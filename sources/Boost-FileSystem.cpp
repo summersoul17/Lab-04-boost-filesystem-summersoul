@@ -21,7 +21,7 @@ void splitString(const string &text, string& ID, string& date) {
   }
 }
 
-Broker Broker::InspectSingleBroker(const boost::filesystem::path &p) {
+Broker Broker::AnalyzerSingleBroker(const boost::filesystem::path &p) {
   Broker broker(p.filename().string());
   for (const auto& x : boost::filesystem::directory_iterator{p})
   {
@@ -43,10 +43,10 @@ Broker Broker::InspectSingleBroker(const boost::filesystem::path &p) {
   return broker;
 }
 
-vector<Broker> Broker::Inspect(const boost::filesystem::path& p, ostream& os) {
+vector<Broker> Broker::Analyz(const boost::filesystem::path& p, ostream& os) {
   vector<Broker> back;
   if (!boost::filesystem::is_directory(p))
-    throw runtime_error("argument must be path to Broker directory, not file");
+    throw runtime_error("Argument must be path to Broker directory!");
   for (const auto& x : boost::filesystem::directory_iterator{p})
   {
     if(!is_directory(x)) {
@@ -56,13 +56,13 @@ vector<Broker> Broker::Inspect(const boost::filesystem::path& p, ostream& os) {
     } else if (is_directory(x)) {
       stringstream out;
       out << x.path().filename().string() << "\n";
-      Inspect(x.path(), out);
+        Analyz(x.path(), out);
       if(out.str() != x.path().filename().string() + "\n"){
         os << out.str();
-        back.emplace_back(Broker::InspectSingleBroker(x.path()));
+        back.emplace_back(Broker::AnalyzerSingleBroker(x.path()));
       }
     } else {
-      os << "This is not a regular file or dir!\n";
+      os << "Wrong file or directroy!\n";
     }
   }
   return back;
@@ -70,15 +70,15 @@ vector<Broker> Broker::Inspect(const boost::filesystem::path& p, ostream& os) {
 
 ostream &operator<<(ostream &os, const vector<Broker>& brokers) {
   if (brokers.empty()) {
-    os << "Brokers array is empty!\n";
+    os << "There's no brokers here!\n";
   } else {
     os << std::endl;
     for (const auto& broker : brokers) {
       for (const auto& account : broker.accounts) {
-        os << "broker:" << broker.name + " "
+        os << "\n-_-_-_-_-_-_-_-_-NEW BROKER-_-_-_-_-_-_-_-_-" << "broker:" << broker.name + " "
            << "account:" << account.first
-           << " files:" << account.second.getFileNum()
-           << " lastdate:" << account.second.getLastDate() << std::endl;
+           << " files:" << account.second.FileCount()
+           << " lastdate:" << account.second.LastDate() << std::endl;
       }
     }
   }

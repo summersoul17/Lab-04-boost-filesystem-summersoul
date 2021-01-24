@@ -18,6 +18,7 @@ using std::find_if;
 using std::make_pair;
 using std::runtime_error;
 using std::move;
+using std::map;
 
 class Broker {
  private:
@@ -35,17 +36,17 @@ class Broker {
     BrokerAccount() = default;
     explicit BrokerAccount(string date)
         : last_date(move(date)), count_of_files(0){};
-    [[nodiscard]] size_t getFileNum() const { return count_of_files; }
-    [[nodiscard]] string getLastDate() const { return last_date; }
+    [[nodiscard]] size_t FileCount() const { return count_of_files; }
+    [[nodiscard]] string LastDate() const { return last_date; }
   };
-  std::map<string, BrokerAccount> accounts;
+  map<string, BrokerAccount> accounts;
   string name;
 
  public:
-  static Broker InspectSingleBroker(const boost::filesystem::path& p);
+  static Broker AnalyzerSingleBroker(const boost::filesystem::path& p);
   explicit Broker(string n) : name(move(n)) {}
   friend ostream& operator<<(ostream& os, const vector<Broker>& brokers);
-  static vector<Broker> Inspect(const boost::filesystem::path& p, ostream& os);
+  static vector<Broker> Analyz(const boost::filesystem::path& p, ostream& os);
   inline static bool isRightFile(const boost::filesystem::path& fileName);
 };
 
