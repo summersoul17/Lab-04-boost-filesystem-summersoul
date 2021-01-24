@@ -47,7 +47,7 @@ class Broker {
   explicit Broker(string n) : name(move(n)) {}
   friend ostream& operator<<(ostream& os, const vector<Broker>& brokers);
   static vector<Broker> Analyz(const boost::filesystem::path& p, ostream& os);
-  inline static bool isRightFile(const boost::filesystem::path& fileName);
+  inline static bool CorrectFileName(const boost::filesystem::path& fileName);
 };
 
 inline bool separator(char c) { return c == '_'; }

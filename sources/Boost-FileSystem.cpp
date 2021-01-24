@@ -2,7 +2,7 @@
 
 #include <Boost-FileSystem.hpp>
 
-bool Broker::isRightFile(const boost::filesystem::path &fileName) {
+bool Broker::CorrectFileName(const boost::filesystem::path &fileName) {
   return (fileName.stem().extension().string() != ".old" &&
           fileName.filename().string().find("balance") != string::npos);
 }
@@ -26,7 +26,7 @@ Broker Broker::AnalyzerSingleBroker(const boost::filesystem::path &p) {
   for (const auto& x : boost::filesystem::directory_iterator{p})
   {
     if(!is_directory(x)) {
-      if (isRightFile(x.path())) {
+      if (CorrectFileName(x.path())) {
         string accountID;
         string accountDate;
 
@@ -50,19 +50,19 @@ vector<Broker> Broker::Analyz(const boost::filesystem::path& p, ostream& os) {
   for (const auto& x : boost::filesystem::directory_iterator{p})
   {
     if(!is_directory(x)) {
-      if (isRightFile(x.path())) {
+      if (CorrectFileName(x.path())) {
         os << x.path().filename().string() << "\n";
       }
     } else if (is_directory(x)) {
       stringstream out;
-      out << x.path().filename().string() << "\n";
+      out <<"\n-_-_-_-_-_-_-_-_-NEW BROKER-_-_-_-_-_-_-_-_-\n" << x.path().filename().string() << "\n";
         Analyz(x.path(), out);
-      if(out.str() != x.path().filename().string() + "\n"){
+      if(out.str() != "\n-_-_-_-_-_-_-_-_-NEW BROKER-_-_-_-_-_-_-_-_-\n" + x.path().filename().string() + "\n"){
         os << out.str();
         back.emplace_back(Broker::AnalyzerSingleBroker(x.path()));
       }
     } else {
-      os << "Wrong file or directroy!\n";
+      os << "Wrong file or directory!\n";
     }
   }
   return back;
@@ -75,10 +75,10 @@ ostream &operator<<(ostream &os, const vector<Broker>& brokers) {
     os << std::endl;
     for (const auto& broker : brokers) {
       for (const auto& account : broker.accounts) {
-        os << "\n-_-_-_-_-_-_-_-_-NEW BROKER-_-_-_-_-_-_-_-_-" << "broker:" << broker.name + " "
-           << "account:" << account.first
-           << " files:" << account.second.FileCount()
-           << " lastdate:" << account.second.LastDate() << std::endl;
+        os << "Broker:" << broker.name + " "
+           << "Account:" << account.first
+           << " Files:" << account.second.FileCount()
+           << " Last date:" << account.second.LastDate() << std::endl;
       }
     }
   }
